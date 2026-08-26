@@ -2,6 +2,16 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, parse_quote, Data, DeriveInput, Fields};
 
+/// Implements SafeSHM marker trait through the Derive proc-macro.
+/// 
+/// The SafeSHM marker trait sinalizes to the AtomicMatrix that the struct being passed has no heap
+/// allocated values and does not store any indirect pointers. Therefore, it is fully safe to be
+/// allocated inside an SHM arena.
+/// 
+/// ### DISCLAIMER
+/// SafeSHM is a marker trait. It doesn't magically make an struct or primitive safe to be stored
+/// inside the AtomicMatrix. It can be implemented to whatever type or struct you want, but using the
+/// trait in heap allocated values will invariantly cause UBs and crashes in your code.
 #[proc_macro_derive(SafeSHM)]
 pub fn derive_safe_shm(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);
